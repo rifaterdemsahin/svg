@@ -1,185 +1,254 @@
-import React, { useState, useEffect } from 'react';
-import { Copy, Download, RefreshCw, Code, Eye } from 'lucide-react';
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SVG Editor</title>
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@0.263.1"></script>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel">
+    const { useState, useEffect } = React;
 
-export default function SVGEditor() {
-  const [svgCode, setSvgCode] = useState(`<svg width="200" height="200" xmlns="http://www.w3.org/2000/svg">
+    // Icon components using Lucide
+    function CopyIcon({ size = 18 }) {
+      return (
+        <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <rect width="14" height="14" x="8" y="8" rx="2" ry="2"/>
+          <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>
+        </svg>
+      );
+    }
+
+    function DownloadIcon({ size = 18 }) {
+      return (
+        <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+          <polyline points="7 10 12 15 17 10"/>
+          <line x1="12" x2="12" y1="15" y2="3"/>
+        </svg>
+      );
+    }
+
+    function RefreshCwIcon({ size = 18 }) {
+      return (
+        <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/>
+          <path d="M21 3v5h-5"/>
+          <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/>
+          <path d="M8 16H3v5"/>
+        </svg>
+      );
+    }
+
+    function CodeIcon({ size = 18 }) {
+      return (
+        <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <polyline points="16 18 22 12 16 6"/>
+          <polyline points="8 6 2 12 8 18"/>
+        </svg>
+      );
+    }
+
+    function EyeIcon({ size = 18 }) {
+      return (
+        <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/>
+          <circle cx="12" cy="12" r="3"/>
+        </svg>
+      );
+    }
+
+    function SVGEditor() {
+      const [svgCode, setSvgCode] = useState(`<svg width="200" height="200" xmlns="http://www.w3.org/2000/svg">
   <circle cx="100" cy="100" r="80" fill="#3b82f6" />
   <rect x="60" y="60" width="80" height="80" fill="#ef4444" opacity="0.7" />
 </svg>`);
-  const [viewMode, setViewMode] = useState('split');
-  const [error, setError] = useState('');
+      const [viewMode, setViewMode] = useState('split');
+      const [error, setError] = useState('');
 
-  useEffect(() => {
-    validateSVG(svgCode);
-  }, [svgCode]);
+      useEffect(() => {
+        validateSVG(svgCode);
+      }, [svgCode]);
 
-  const validateSVG = (code) => {
-    try {
-      const parser = new DOMParser();
-      const doc = parser.parseFromString(code, 'image/svg+xml');
-      const errorNode = doc.querySelector('parsererror');
-      if (errorNode) {
-        setError('Invalid SVG syntax');
-      } else {
-        setError('');
-      }
-    } catch (e) {
-      setError('Invalid SVG');
-    }
-  };
+      const validateSVG = (code) => {
+        try {
+          const parser = new DOMParser();
+          const doc = parser.parseFromString(code, 'image/svg+xml');
+          const errorNode = doc.querySelector('parsererror');
+          if (errorNode) {
+            setError('Invalid SVG syntax');
+          } else {
+            setError('');
+          }
+        } catch (e) {
+          setError('Invalid SVG');
+        }
+      };
 
-  const handleCopy = () => {
-    navigator.clipboard.writeText(svgCode);
-  };
+      const handleCopy = () => {
+        navigator.clipboard.writeText(svgCode);
+      };
 
-  const handleDownload = () => {
-    const blob = new Blob([svgCode], { type: 'image/svg+xml' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'image.svg';
-    a.click();
-    URL.revokeObjectURL(url);
-  };
+      const handleDownload = () => {
+        const blob = new Blob([svgCode], { type: 'image/svg+xml' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'image.svg';
+        a.click();
+        URL.revokeObjectURL(url);
+      };
 
-  const handleFormat = () => {
-    try {
-      const parser = new DOMParser();
-      const doc = parser.parseFromString(svgCode, 'image/svg+xml');
-      const serializer = new XMLSerializer();
-      let formatted = serializer.serializeToString(doc.documentElement);
-      
-      // Basic formatting
-      formatted = formatted
-        .replace(/></g, '>\n<')
-        .split('\n')
-        .map((line, i) => {
-          const depth = (line.match(/^<[^\/]/g) || []).length - (line.match(/<\//g) || []).length;
-          return '  '.repeat(Math.max(0, depth)) + line.trim();
-        })
-        .join('\n');
-      
-      setSvgCode(formatted);
-    } catch (e) {
-      setError('Could not format SVG');
-    }
-  };
-
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 to-slate-800 text-white p-6">
-      <div className="max-w-7xl mx-auto">
-        <div className="mb-6">
-          <h1 className="text-4xl font-bold mb-2 bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-            SVG Editor
-          </h1>
-          <p className="text-slate-400">Paste and edit SVG code with live preview</p>
-        </div>
-
-        {/* Toolbar */}
-        <div className="bg-slate-800 rounded-lg p-4 mb-4 flex flex-wrap gap-3">
-          <div className="flex gap-2">
-            <button
-              onClick={() => setViewMode('split')}
-              className={`px-4 py-2 rounded-lg font-medium transition ${
-                viewMode === 'split'
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
-              }`}
-            >
-              Split View
-            </button>
-            <button
-              onClick={() => setViewMode('code')}
-              className={`px-4 py-2 rounded-lg font-medium transition flex items-center gap-2 ${
-                viewMode === 'code'
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
-              }`}
-            >
-              <Code size={18} /> Code
-            </button>
-            <button
-              onClick={() => setViewMode('preview')}
-              className={`px-4 py-2 rounded-lg font-medium transition flex items-center gap-2 ${
-                viewMode === 'preview'
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
-              }`}
-            >
-              <Eye size={18} /> Preview
-            </button>
-          </div>
+      const handleFormat = () => {
+        try {
+          const parser = new DOMParser();
+          const doc = parser.parseFromString(svgCode, 'image/svg+xml');
+          const serializer = new XMLSerializer();
+          let formatted = serializer.serializeToString(doc.documentElement);
           
-          <div className="flex gap-2 ml-auto">
-            <button
-              onClick={handleFormat}
-              className="px-4 py-2 bg-slate-700 hover:bg-slate-600 rounded-lg font-medium transition flex items-center gap-2"
-            >
-              <RefreshCw size={18} /> Format
-            </button>
-            <button
-              onClick={handleCopy}
-              className="px-4 py-2 bg-slate-700 hover:bg-slate-600 rounded-lg font-medium transition flex items-center gap-2"
-            >
-              <Copy size={18} /> Copy
-            </button>
-            <button
-              onClick={handleDownload}
-              className="px-4 py-2 bg-green-600 hover:bg-green-700 rounded-lg font-medium transition flex items-center gap-2"
-            >
-              <Download size={18} /> Download
-            </button>
-          </div>
-        </div>
+          // Basic formatting
+          formatted = formatted
+            .replace(/></g, '>\n<')
+            .split('\n')
+            .map((line, i) => {
+              const depth = (line.match(/^<[^\/]/g) || []).length - (line.match(/<\//g) || []).length;
+              return '  '.repeat(Math.max(0, depth)) + line.trim();
+            })
+            .join('\n');
+          
+          setSvgCode(formatted);
+        } catch (e) {
+          setError('Could not format SVG');
+        }
+      };
 
-        {error && (
-          <div className="bg-red-900/50 border border-red-600 rounded-lg p-4 mb-4">
-            <p className="text-red-200">{error}</p>
-          </div>
-        )}
-
-        {/* Main Content */}
-        <div className={`grid gap-4 ${viewMode === 'split' ? 'grid-cols-2' : 'grid-cols-1'}`}>
-          {/* Code Editor */}
-          {(viewMode === 'split' || viewMode === 'code') && (
-            <div className="bg-slate-800 rounded-lg overflow-hidden">
-              <div className="bg-slate-700 px-4 py-2 font-semibold">SVG Code</div>
-              <textarea
-                value={svgCode}
-                onChange={(e) => setSvgCode(e.target.value)}
-                className="w-full h-[600px] bg-slate-900 text-slate-100 p-4 font-mono text-sm focus:outline-none resize-none"
-                spellCheck="false"
-              />
+      return (
+        <div className="min-h-screen bg-gradient-to-br from-slate-900 to-slate-800 text-white p-6">
+          <div className="max-w-7xl mx-auto">
+            <div className="mb-6">
+              <h1 className="text-4xl font-bold mb-2 bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+                SVG Editor
+              </h1>
+              <p className="text-slate-400">Paste and edit SVG code with live preview</p>
             </div>
-          )}
 
-          {/* Preview */}
-          {(viewMode === 'split' || viewMode === 'preview') && (
-            <div className="bg-slate-800 rounded-lg overflow-hidden">
-              <div className="bg-slate-700 px-4 py-2 font-semibold">Preview</div>
-              <div className="h-[600px] bg-white flex items-center justify-center overflow-auto">
-                {!error && (
-                  <div
-                    dangerouslySetInnerHTML={{ __html: svgCode }}
-                    className="max-w-full max-h-full"
-                  />
-                )}
+            {/* Toolbar */}
+            <div className="bg-slate-800 rounded-lg p-4 mb-4 flex flex-wrap gap-3">
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setViewMode('split')}
+                  className={`px-4 py-2 rounded-lg font-medium transition ${
+                    viewMode === 'split'
+                      ? 'bg-blue-600 text-white'
+                      : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
+                  }`}
+                >
+                  Split View
+                </button>
+                <button
+                  onClick={() => setViewMode('code')}
+                  className={`px-4 py-2 rounded-lg font-medium transition flex items-center gap-2 ${
+                    viewMode === 'code'
+                      ? 'bg-blue-600 text-white'
+                      : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
+                  }`}
+                >
+                  <CodeIcon size={18} /> Code
+                </button>
+                <button
+                  onClick={() => setViewMode('preview')}
+                  className={`px-4 py-2 rounded-lg font-medium transition flex items-center gap-2 ${
+                    viewMode === 'preview'
+                      ? 'bg-blue-600 text-white'
+                      : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
+                  }`}
+                >
+                  <EyeIcon size={18} /> Preview
+                </button>
+              </div>
+              
+              <div className="flex gap-2 ml-auto">
+                <button
+                  onClick={handleFormat}
+                  className="px-4 py-2 bg-slate-700 hover:bg-slate-600 rounded-lg font-medium transition flex items-center gap-2"
+                >
+                  <RefreshCwIcon size={18} /> Format
+                </button>
+                <button
+                  onClick={handleCopy}
+                  className="px-4 py-2 bg-slate-700 hover:bg-slate-600 rounded-lg font-medium transition flex items-center gap-2"
+                >
+                  <CopyIcon size={18} /> Copy
+                </button>
+                <button
+                  onClick={handleDownload}
+                  className="px-4 py-2 bg-green-600 hover:bg-green-700 rounded-lg font-medium transition flex items-center gap-2"
+                >
+                  <DownloadIcon size={18} /> Download
+                </button>
               </div>
             </div>
-          )}
-        </div>
 
-        {/* Info */}
-        <div className="mt-6 bg-slate-800 rounded-lg p-4 text-sm text-slate-400">
-          <p className="mb-2"><strong className="text-slate-300">Tips:</strong></p>
-          <ul className="list-disc list-inside space-y-1">
-            <li>Paste your SVG code in the editor to see it rendered in real-time</li>
-            <li>Use the Format button to auto-indent your SVG code</li>
-            <li>Switch between Split, Code, and Preview modes</li>
-            <li>Download your edited SVG or copy it to clipboard</li>
-          </ul>
+            {error && (
+              <div className="bg-red-900/50 border border-red-600 rounded-lg p-4 mb-4">
+                <p className="text-red-200">{error}</p>
+              </div>
+            )}
+
+            {/* Main Content */}
+            <div className={`grid gap-4 ${viewMode === 'split' ? 'grid-cols-2' : 'grid-cols-1'}`}>
+              {/* Code Editor */}
+              {(viewMode === 'split' || viewMode === 'code') && (
+                <div className="bg-slate-800 rounded-lg overflow-hidden">
+                  <div className="bg-slate-700 px-4 py-2 font-semibold">SVG Code</div>
+                  <textarea
+                    value={svgCode}
+                    onChange={(e) => setSvgCode(e.target.value)}
+                    className="w-full h-[600px] bg-slate-900 text-slate-100 p-4 font-mono text-sm focus:outline-none resize-none"
+                    spellCheck="false"
+                  />
+                </div>
+              )}
+
+              {/* Preview */}
+              {(viewMode === 'split' || viewMode === 'preview') && (
+                <div className="bg-slate-800 rounded-lg overflow-hidden">
+                  <div className="bg-slate-700 px-4 py-2 font-semibold">Preview</div>
+                  <div className="h-[600px] bg-white flex items-center justify-center overflow-auto">
+                    {!error && (
+                      <div
+                        dangerouslySetInnerHTML={{ __html: svgCode }}
+                        className="max-w-full max-h-full"
+                      />
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Info */}
+            <div className="mt-6 bg-slate-800 rounded-lg p-4 text-sm text-slate-400">
+              <p className="mb-2"><strong className="text-slate-300">Tips:</strong></p>
+              <ul className="list-disc list-inside space-y-1">
+                <li>Paste your SVG code in the editor to see it rendered in real-time</li>
+                <li>Use the Format button to auto-indent your SVG code</li>
+                <li>Switch between Split, Code, and Preview modes</li>
+                <li>Download your edited SVG or copy it to clipboard</li>
+              </ul>
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
-  );
-}
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<SVGEditor />);
+  </script>
+</body>
+</html>
